@@ -19,16 +19,21 @@
 *   **Rich Details**: View high-quality posters, backdrops, ratings, and plot overviews.
 
 ### 4. SafeWalk
-*   **Live Location Sharing**: Simulate a safe journey home (Mock implementation).
+*   **Live Location Sharing**: Simulate a safe journey.
 *   **Guardian System**: Select a squad member to watch over your walk.
 *   **Slider to Stop**: Custom "Slide to Stop" UI to prevent accidental cancellations during emergencies.
+
+### 5. Profile
+*   **Notifications**: turn on or off app notifications.
+*   **Dark/Light Mode**: Customize the appearance of the application.
+*   **Edit Profile**: Edit personal information after signup or login.
 
 ## Tech Stack
 
 *   **Framework**: Flutter (Dart)
 *   **State Management**: Bloc state management.
 *   **Navigation**: Flutter Named Routes.
-*   **Networking**: `dio` and `http` package for API integration.
+*   **Networking**: `dio` for Ntwork operation and `http` package for API integration.
 *   **Fonts**: `google_fonts`.
 *   **Safety**: `slide_action_button` custom widget.
 
@@ -71,6 +76,7 @@ lib/
 │   ├── models/         # Data models
 │   ├── services/       # MovieService (TMDB)
 │   ├── theme/          # AppTheme (Light/Dark)
+│   ├── utils/          # Includes validation utility file
 │   └── widgets/        # Reusable widgets (SlideButton, StatusChip)
 ├── features/
 │   ├── auth/           # Login & Onboarding
@@ -82,6 +88,6 @@ lib/
 │   ├── status/         # Status Screen
 │   └── watchlist/      # Watchlist & Movie Details
 ├── routes/             # App Routes definitions
-└── app.dart            # Main App Widget & Theme Setup
+├── app.dart            # Main App Widget & Theme Setup
 └── main.dart           # Entry point for the Flutter Application
 ```

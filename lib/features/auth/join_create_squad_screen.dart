@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../core/widgets/empty_state.dart';
 import '../../core/widgets/app_scaffold.dart';
-import '../../core/widgets/empty_state.dart';
 import 'bloc/auth_bloc.dart';
 import 'bloc/auth_event.dart';
 import 'widgets/join_squad_dialog.dart';
