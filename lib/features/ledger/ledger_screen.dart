@@ -99,7 +99,6 @@ class LedgerScreen extends StatelessWidget {
           backgroundColor: Colors.transparent,
           body: CustomScrollView(
             slivers: [
-              // Enhanced Header
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.all(AppSpacing.md),
@@ -170,7 +169,6 @@ class LedgerScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // Friends List with animations
               SliverToBoxAdapter(
                 child: activeDebts.isEmpty
                     ? const Padding(
@@ -374,7 +372,6 @@ class LedgerScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // Expenses List
               state.expenses.isEmpty
                   ? SliverToBoxAdapter(
                       child: EmptyState(

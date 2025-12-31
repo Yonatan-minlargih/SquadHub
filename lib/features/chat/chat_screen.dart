@@ -98,7 +98,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentMessage = messages[index];
     final previousMessage = messages[index - 1];
 
-    // This shows avatar if:
+    // Shows avatar if:
     // 1. Different sender
     // 2. More than 5 minutes gap
     // 3. Different day
@@ -121,7 +121,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final currentMessage = messages[index];
     final previousMessage = messages[index - 1];
 
-    // Groups messages if same sender and within 5 minutes
+    // Group messages if same sender and within 5 minutes
     if (currentMessage.senderName != previousMessage.senderName) return false;
     final timeDiff = currentMessage.timestamp.difference(
       previousMessage.timestamp,
