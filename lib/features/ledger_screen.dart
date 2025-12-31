@@ -374,7 +374,7 @@ class LedgerScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // Expenses List
+              // Expenses List with animations
               state.expenses.isEmpty
                   ? SliverToBoxAdapter(
                       child: EmptyState(
