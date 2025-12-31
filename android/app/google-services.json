@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "146108150432",
+    "project_id": "squadhub-b8655",
+    "storage_bucket": "squadhub-b8655.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:146108150432:android:6cc082498d1a63a3f8cfc5",
+        "android_client_info": {
+          "package_name": "com.example.squadhub"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHyoh_69IbgHV8KhKQC-vbbciu708IU_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
