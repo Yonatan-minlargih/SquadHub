@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../theme/bloc/theme_bloc.dart';
+import '../theme/bloc/theme_bloc.dart';
 import '../../../features/auth/bloc/auth_bloc.dart';
 import '../../../features/chat/bloc/chat_bloc.dart';
 import '../../../features/status/bloc/status_bloc.dart';
