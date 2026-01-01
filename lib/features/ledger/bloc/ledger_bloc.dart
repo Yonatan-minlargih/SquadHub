@@ -17,6 +17,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     on<LedgerLoadExpenses>(_onLoadExpenses);
     on<LedgerUpdateExpenses>(_onUpdateExpenses);
     on<LedgerUpdateUsers>(_onUpdateUsers);
+    on<LedgerError>(_onLedgerError);
     on<LedgerAddExpense>(_onAddExpense);
     on<LedgerSettleUp>(_onSettleUp);
   }
@@ -35,24 +36,38 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
         .where('squadId', isEqualTo: event.squadId)
         .orderBy('date', descending: true)
         .snapshots()
-        .listen((snapshot) {
-          final expenses = snapshot.docs
-              .map((doc) => Expense.fromFirestore(doc))
-              .toList();
-          add(LedgerUpdateExpenses(expenses));
-        });
+        .listen(
+          (snapshot) {
+            final expenses = snapshot.docs
+                .map((doc) => Expense.fromFirestore(doc))
+                .toList();
+            add(LedgerUpdateExpenses(expenses));
+          },
+          onError: (error) {
+            add(LedgerError('Expenses sync failed: $error'));
+          },
+        );
 
     // 2. Subscribe to Users
     _usersSubscription = _firestore
         .collection('users')
         .where('squadId', isEqualTo: event.squadId)
         .snapshots()
-        .listen((snapshot) {
-          final users = snapshot.docs
-              .map((doc) => User.fromFirestore(doc.data(), doc.id))
-              .toList();
-          add(LedgerUpdateUsers(users));
-        });
+        .listen(
+          (snapshot) {
+            final users = snapshot.docs
+                .map((doc) => User.fromFirestore(doc.data(), doc.id))
+                .toList();
+            add(LedgerUpdateUsers(users));
+          },
+          onError: (error) {
+            add(LedgerError('Users sync failed: $error'));
+          },
+        );
+  }
+
+  void _onLedgerError(LedgerError event, Emitter<LedgerState> emit) {
+    emit(state.copyWith(error: event.message, isLoading: false));
   }
 
   void _onUpdateExpenses(
@@ -74,13 +89,19 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
   }
 
   Map<String, double> _calculateNetBalances(List<Expense> expenses) {
+    // Calculates "Pool Balance": (Total Paid) - (Total Consumed)
+    // Positive = Creditor (Owed by squad)
+    // Negative = Debtor (Owes squad)
     final netBalances = <String, double>{};
     for (var expense in expenses) {
+      // Add credit to payer
+      netBalances[expense.paidBy.id] =
+          (netBalances[expense.paidBy.id] ?? 0.0) + expense.totalAmount;
+
+      // Subtract debt from splitters
       expense.splits.forEach((userId, amount) {
-        if (userId != expense.paidBy.id) {
-          netBalances[userId] =
-              (netBalances[userId] ?? 0.0) + (amount as num).toDouble();
-        }
+        netBalances[userId] =
+            (netBalances[userId] ?? 0.0) - (amount as num).toDouble();
       });
     }
     return netBalances;
@@ -116,8 +137,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     LedgerSettleUp event,
     Emitter<LedgerState> emit,
   ) async {
-    final currentBalance = state.netBalances[event.user.id] ?? 0;
-    if (currentBalance == 0) return;
+    if (event.amount == 0) return;
 
     final firebaseUser = auth.FirebaseAuth.instance.currentUser;
     if (firebaseUser == null) return;
@@ -128,14 +148,28 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
       avatarUrl: (firebaseUser.displayName ?? 'M').substring(0, 1),
     );
 
+    // Logic:
+    // If I Owe (isIOwe = true):
+    //   I pay. User (Friend) receives.
+    //   Expense: PaidBy: Me. Split: User (100%).
+    //   Me (Debtor) Pool Balance increases (reduces debt).
+    //   User (Creditor) Pool Balance decreases (credit paid off).
+    // If They Owe (isIOwe = false):
+    //   User pays. I receive.
+    //   Expense: PaidBy: User. Split: Me (100%).
+    //   User (Debtor) Pool Balance increases.
+    //   Me (Creditor) Pool Balance decreases.
+
     final settleExpense = Expense(
       id: const Uuid().v4(),
       title: 'Settled up with ${event.user.name}',
       squadId: event.squadId,
-      totalAmount: currentBalance.abs(),
-      paidBy: currentBalance > 0 ? event.user : currentUser,
+      totalAmount: event.amount.abs(),
+      paidBy: event.isIOwe ? currentUser : event.user,
       date: DateTime.now(),
-      splits: {},
+      splits: {
+        event.isIOwe ? event.user.id : currentUser.id: event.amount.abs(),
+      },
     );
 
     try {
