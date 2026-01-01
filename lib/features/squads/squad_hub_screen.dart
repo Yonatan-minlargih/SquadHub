@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'dart:async';
 import '../profile/profile_drawer.dart';
-
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../core/widgets/app_scaffold.dart';
