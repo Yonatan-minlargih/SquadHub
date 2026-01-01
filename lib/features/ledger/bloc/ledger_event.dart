@@ -37,11 +37,18 @@ class LedgerAddExpense extends LedgerEvent {
 class LedgerSettleUp extends LedgerEvent {
   final User user;
   final String squadId;
+  final double amount;
+  final bool isIOwe;
 
-  const LedgerSettleUp({required this.user, required this.squadId});
+  const LedgerSettleUp({
+    required this.user,
+    required this.squadId,
+    required this.amount,
+    required this.isIOwe,
+  });
 
   @override
-  List<Object?> get props => [user, squadId];
+  List<Object?> get props => [user, squadId, amount, isIOwe];
 }
 
 class LedgerUpdateExpenses extends LedgerEvent {
@@ -56,4 +63,11 @@ class LedgerUpdateUsers extends LedgerEvent {
   const LedgerUpdateUsers(this.users);
   @override
   List<Object?> get props => [users];
+}
+
+class LedgerError extends LedgerEvent {
+  final String message;
+  const LedgerError(this.message);
+  @override
+  List<Object?> get props => [message];
 }
